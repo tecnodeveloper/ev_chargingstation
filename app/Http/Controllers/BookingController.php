@@ -91,7 +91,8 @@ class BookingController extends Controller
 
             $station = Station::findOrFail($request->station_id);
             $startTime = Carbon::parse($request->start_time);
-            $endTime = $startTime->copy()->addHours($request->duration_hours);
+            $durationHours = floatval($request->duration_hours);
+            $endTime = $startTime->copy()->addHours($durationHours);
 
             // Check if station has available slots for the requested time
             $availableSlotsForTimeSlot = $station->getAvailableSlotsForTime($startTime, $endTime);
@@ -105,7 +106,7 @@ class BookingController extends Controller
 
             // Calculate cost using station pricing or default
             $hourlyRate = $station->pricing_per_hour ?? 5.0; // Default $5/hour
-            $baseCost = $request->duration_hours * $hourlyRate;
+            $baseCost = $durationHours * $hourlyRate;
 
             // Apply premium discount
             $discountPercentage = $user->getDiscountPercentage();
@@ -122,7 +123,7 @@ class BookingController extends Controller
                             'currency' => 'usd',
                             'product_data' => [
                                 'name' => 'EV Charging Session - ' . $station->name,
-                                'description' => 'Charging session from ' . $startTime->format('M j, Y g:i A') . ' for ' . $request->duration_hours . ' hours',
+                                'description' => 'Charging session from ' . $startTime->format('M j, Y g:i A') . ' for ' . $durationHours . ' hours',
                             ],
                             'unit_amount' => intval($totalCost * 100), // Stripe expects cents
                         ],
@@ -136,7 +137,7 @@ class BookingController extends Controller
                     'user_id' => $user->id,
                     'station_id' => $request->station_id,
                     'start_time' => $startTime->toISOString(),
-                    'duration_hours' => $request->duration_hours,
+                    'duration_hours' => $durationHours,
                     'estimated_energy_needed' => $request->estimated_energy_needed,
                     'notes' => $request->notes,
                     'discount_percentage' => $discountPercentage,
@@ -155,7 +156,7 @@ class BookingController extends Controller
                         'address' => $station->address,
                     ],
                     'start_time' => $startTime->format('M j, Y g:i A'),
-                    'duration_hours' => $request->duration_hours,
+                    'duration_hours' => $durationHours,
                     'total_amount' => $totalCost,
                     'discount_applied' => $discountPercentage > 0 ? $discountPercentage : null,
                 ]
@@ -195,7 +196,8 @@ class BookingController extends Controller
             $user = \App\Models\User::findOrFail($metadata->user_id);
             $station = Station::findOrFail($metadata->station_id);
             $startTime = Carbon::parse($metadata->start_time);
-            $endTime = $startTime->copy()->addHours($metadata->duration_hours);
+            $durationHours = floatval($metadata->duration_hours); // Convert string to float
+            $endTime = $startTime->copy()->addHours($durationHours);
 
             // Double-check slot availability
             $availableSlotsForTimeSlot = $station->getAvailableSlotsForTime($startTime, $endTime);
@@ -206,8 +208,8 @@ class BookingController extends Controller
 
             // Calculate cost using the same logic as before
             $hourlyRate = $station->pricing_per_hour ?? 5.0;
-            $baseCost = $metadata->duration_hours * $hourlyRate;
-            $discountPercentage = $metadata->discount_percentage ?? 0;
+            $baseCost = $durationHours * $hourlyRate;
+            $discountPercentage = floatval($metadata->discount_percentage ?? 0);
             $totalCost = $baseCost * (1 - $discountPercentage / 100);
 
             // Create the booking
@@ -216,11 +218,11 @@ class BookingController extends Controller
                 'station_id' => $metadata->station_id,
                 'start_time' => $startTime,
                 'end_time' => $endTime,
-                'duration_hours' => $metadata->duration_hours,
-                'estimated_energy_needed' => $metadata->estimated_energy_needed,
+                'duration_hours' => $durationHours,
+                'estimated_energy_needed' => floatval($metadata->estimated_energy_needed ?? 0),
                 'total_amount' => $totalCost,
                 'status' => 'confirmed', // Set as confirmed since payment is complete
-                'notes' => $metadata->notes,
+                'notes' => $metadata->notes ?? null,
                 'payment_session_id' => $sessionId,
             ]);
 
@@ -361,7 +363,8 @@ class BookingController extends Controller
 
             $station = $booking->station;
             $newStartTime = Carbon::parse($request->start_time);
-            $newEndTime = $newStartTime->copy()->addHours($request->duration_hours);
+            $newDurationHours = floatval($request->duration_hours);
+            $newEndTime = $newStartTime->copy()->addHours($newDurationHours);
 
             // Check if the new time slot is available (excluding current booking)
             $conflictingBookings = Booking::where('station_id', $station->id)
@@ -387,7 +390,7 @@ class BookingController extends Controller
             // Calculate new cost
             $user = Auth::user();
             $hourlyRate = $station->pricing_per_hour ?? 5.0;
-            $baseCost = $request->duration_hours * $hourlyRate;
+            $baseCost = $newDurationHours * $hourlyRate;
             $discountPercentage = $user->getDiscountPercentage();
             $totalCost = $baseCost * (1 - $discountPercentage / 100);
 
@@ -395,7 +398,7 @@ class BookingController extends Controller
             $booking->update([
                 'start_time' => $newStartTime,
                 'end_time' => $newEndTime,
-                'duration_hours' => $request->duration_hours,
+                'duration_hours' => $newDurationHours,
                 'total_amount' => $totalCost,
             ]);
 
