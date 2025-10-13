@@ -8,7 +8,7 @@
     <title>Admin Dashboard - EVC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNLrJhOMz6idD05pzfn5lhA-TAw-mAZCU&libraries=places"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places"></script>
     <style>
         /* Custom styles for fullscreen map */
         .map-container {
@@ -46,7 +46,7 @@
 
         /* Text cursor for text inputs */
         input[type="text"],
-        input[type="email"], 
+        input[type="email"],
         input[type="tel"],
         input[type="password"],
         textarea {
@@ -215,7 +215,7 @@
                 <ul class="space-y-2">
                     <!-- Dashboard -->
                     <li>
-                        <button @click="activeSection = 'dashboard'" 
+                        <button @click="activeSection = 'dashboard'"
                                 :class="activeSection === 'dashboard' ? 'bg-green-500 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-slate-700'"
                                 class="flex items-center p-3 rounded-lg transition-all duration-300 w-full text-left">
                             <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -224,10 +224,10 @@
                             <span x-show="sidebarOpen" x-transition class="sidebar-text font-medium">Dashboard</span>
                         </button>
                     </li>
-                    
+
                     <!-- Users Management -->
                     <li>
-                        <button @click="activeSection = 'users'" 
+                        <button @click="activeSection = 'users'"
                                 :class="activeSection === 'users' ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-slate-700'"
                                 class="flex items-center p-3 rounded-lg transition-all duration-300 w-full text-left">
                             <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -236,10 +236,10 @@
                             <span x-show="sidebarOpen" x-transition class="sidebar-text font-medium">Users</span>
                         </button>
                     </li>
-                    
+
                     <!-- Reservations -->
                     <li>
-                        <button @click="activeSection = 'reservations'" 
+                        <button @click="activeSection = 'reservations'"
                                 :class="activeSection === 'reservations' ? 'bg-purple-500 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-slate-700'"
                                 class="flex items-center p-3 rounded-lg transition-all duration-300 w-full text-left">
                             <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -248,10 +248,10 @@
                             <span x-show="sidebarOpen" x-transition class="sidebar-text font-medium">Reservations</span>
                         </button>
                     </li>
-                    
+
                     <!-- Station Management -->
                     <li>
-                        <button @click="activeSection = 'stations'" 
+                        <button @click="activeSection = 'stations'"
                                 :class="activeSection === 'stations' ? 'bg-yellow-500 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-slate-700'"
                                 class="flex items-center p-3 rounded-lg transition-all duration-300 w-full text-left">
                             <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">

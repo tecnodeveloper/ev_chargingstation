@@ -27,8 +27,8 @@
         }
     </style>
     <!-- Google Maps API with proper async loading -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe01XhdFq2z3Sx2jrmqkIzxhMtNoHIi5o&libraries=places,marker&loading=async&callback=initGoogleMaps"
-            onerror="console.error('❌ Failed to load Google Maps API - Check billing and API enablement')"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places,marker&loading=async&callback=initGoogleMaps"
+        onerror="console.error('❌ Failed to load Google Maps API - Check billing and API enablement')"></script>
 
     <script>
         // Global Google Maps callback
@@ -62,9 +62,8 @@
             }
         });
 
-        // Debug: Check if Google Maps script is loading
-        console.log('🚀 Station Management page loaded');
-        console.log('📍 Google Maps API Key present:', 'AIzaSyBe01XhdFq2z3Sx2jrmqkIzxhMtNoHIi5o'.substring(0, 20) + '...');
+    // Debug: Check if Google Maps script is loading
+    console.log('🚀 Station Management page loaded');
     </script>
 </head>
 <body class="bg-slate-900 text-white h-screen flex flex-col">
