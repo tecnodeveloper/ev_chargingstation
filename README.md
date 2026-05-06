@@ -163,7 +163,7 @@ The system supports dual authentication:
 
 All API responses follow a consistent format:
 
-## ⚡ Performance Features
+##  Performance Features
 
 -   **Pagination** - All list endpoints support pagination
 -   **Filtering** - Advanced filtering options for data retrieval
